@@ -1,0 +1,16 @@
+version: '3'
+services:
+  backend:
+    build: ./backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+  reservation:
+    build: ./reservation
+    ports:
+      - "3000:3000"
+  management:
+    build: ./management
+    ports:
+      - "3000:3001"
