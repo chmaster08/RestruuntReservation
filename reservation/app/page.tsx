@@ -1,20 +1,26 @@
 "use client";
 import { Button, Container, Stack, Typography } from "@mui/material";
-import Image from "next/image";
-import Preinput from "./components/preinput";
+import Complete from "./complete";
+import ReservationPage from "./reservation";
+import { useState } from "react";
 
 export default function Home() {
+  const[isReservationCompleted, setIsReservationCompleted] = useState(false);
 
-  const handlePreInputCompleted = (date:Date, num:number) => {
-    console.log(date);
-    console.log(num);
+  const handleReservationCompleted = () => {
+    console.log("予約完了");
+    setIsReservationCompleted(true);
   }
   return (
     <>
-    <Stack spacing={2} direction="column" alignItems="center">
-      <Typography variant="h1">予約サイト</Typography>
-      <Preinput inputCompleted={handlePreInputCompleted}></Preinput>
-    </Stack>
+      <Container>
+        <Typography align="center" variant="h1">予約サイト</Typography>
+        {isReservationCompleted ? 
+          <Complete orderNumber={1}></Complete>
+         : 
+          <ReservationPage reservationCompleted={handleReservationCompleted}></ReservationPage>
+        }
+      </Container>
     </>
   );
 }

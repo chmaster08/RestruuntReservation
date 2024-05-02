@@ -1,10 +1,7 @@
-import { type } from "os"
+const TableType ={
+    Indoor:0,
+    Terrace:1,
+} as const;
 
-type TableType = 
-{
-    id:Number,
-    name:String,
-    capacity:Number,
-}
-
-export default TableType
+type TableType = typeof TableType[keyof typeof TableType];
+export default TableType;

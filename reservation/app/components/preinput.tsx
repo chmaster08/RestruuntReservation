@@ -13,12 +13,11 @@ interface PreinputProps {
 
 export default function Preinput(props:PreinputProps) {
 
-    const tomorrow = dayjs().add(1, 'day');
     const maxDate = dayjs().add(1, 'month');
     const availableMembers = ["1","2","3","4","5","6"];
     const availableTableTypes = ["屋内","テラス","どちらでも"];
     const [selectedNum, setSelectedNum] = useState("2");
-    const [selectedDate, setSelectedDate] = useState(tomorrow);
+    const [selectedDate, setSelectedDate] = useState(dayjs());
     const [selectedTableType, setSelectedTableType] = useState("屋内");
 
 
