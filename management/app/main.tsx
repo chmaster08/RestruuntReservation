@@ -5,6 +5,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
 import TimelineComponent from "./timeline";
 import StatisticsComponent from "./statistics";
+import ReservationList from "./ReservationList";
 
 export default function ManagementMain() {
 
@@ -20,10 +21,9 @@ export default function ManagementMain() {
                 <Stack spacing={2} direction="column" alignItems="center">
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker sx={{width:"100%"}} disablePast defaultValue={selectedDate} maxDate={maxDate} value={selectedDate} onChange={handleSelectedDateChange}></DatePicker>
-                    </LocalizationProvider>
-                    <StatisticsComponent></StatisticsComponent>
-                    <TimelineComponent></TimelineComponent>
-                </Stack>
+                </LocalizationProvider>
+                <ReservationList></ReservationList>
+            </Stack>
             </>
         );
 }

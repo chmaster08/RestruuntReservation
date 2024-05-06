@@ -1,22 +1,22 @@
 import { Box, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { Container } from "postcss";
 import { useState } from "react";
-import TableType from '../libs/tabletype';
-import ReservationItem from "../libs/reservationItem";
+import { TableType, convertToString } from '../libs/tabletype';
+import AvailableReservationItem from "../libs/reservationItem";
 
 interface AvailableTableListProps {
-    availableTables:ReservationItem[]
+    availableTables:AvailableReservationItem[]
     tableSelected:Function
 }
 
 
 export default function AvailableTableList(props:AvailableTableListProps) {
+    console.log(props.availableTables);
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const [selectedIndex, setSelectedIndex] = useState(1);
-
-    const handleSelectedTable = (index:number) => {
-        setSelectedIndex(index);
-        props.tableSelected(props.availableTables[index]);
+    const handleSelectedTable = (index:number, item : AvailableReservationItem) => {
+        setSelectedIndex(index)
+        props.tableSelected(item);
     }
 
 
@@ -28,12 +28,12 @@ export default function AvailableTableList(props:AvailableTableListProps) {
                   <ListItemButton
                     key={index}
                     selected={selectedIndex === index}
-                    onClick={(event) => handleSelectedTable(index)}
+                    onClick={(event) => handleSelectedTable(index, item)}
                   >
                     <ListItemText
                       primary={item.time}
                       secondary={
-                        item.tableType === TableType.Indoor ? "屋内" : "テラス"
+                        convertToString(item.tableType)
                       }
                     ></ListItemText>
                   </ListItemButton>

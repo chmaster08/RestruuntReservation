@@ -1,7 +1,7 @@
 import TableType from './tabletype';
-type ReservationItem = {
+type AvailableReservationItem = {
     time: string,
     tableType: TableType,
 }
 
-export default ReservationItem;
+export default AvailableReservationItem;

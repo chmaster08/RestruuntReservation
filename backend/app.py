@@ -1,12 +1,22 @@
-from flask import Flask, request, session
-
+from flask import Flask, request, session, jsonify
+from flask_cors import CORS
+import logging
+from SQLiteRepository.SQLiteReservationRepository import SQLiteReservatonRepository
+from entity.IReservationRepository import IReservationRepository
+repository : IReservationRepository = SQLiteReservatonRepository("reservation.db")
 app = Flask(__name__)
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.INFO)
+CORS(app, origins=["http://localhost:3001"], allow_unsafe_werkzeug_debugger=True)
 
 @app.route("/register", methods=["POST"])
 def register():
-    time  = request.args["time"]
-    member = request.args["member"]
-    tableType = request.args["tableType"]
+    date = request.form.get("date")
+    time  = request.form.get("time")
+    num = request.form.get("member")
+    tableType = request.form.get("tableType")
+    name = request.form.get("name")
+    app.logger.info(f"date: {date}, time: {time}, num: {num}, tableType: {tableType}, name: {name}")
     return {"result": "success"}
 
 @app.route("/get_table", methods=["GET"])
@@ -17,6 +27,7 @@ def get_table():
 def get_availabletable():
     member = request.args["member"]
     tableType = request.args["tableType"]
+    result =  repository.get_available_table(member, tableType)
     return {"result": "success"}
 
 @app.route("/login", methods=["POST"])

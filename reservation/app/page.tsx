@@ -11,12 +11,17 @@ export default function Home() {
     console.log("予約完了");
     setIsReservationCompleted(true);
   }
+
+  const handlebackToHome = () => {
+    console.log("戻る");
+    setIsReservationCompleted(false);
+  }
   return (
     <>
       <Container>
         <Typography align="center" variant="h1">予約サイト</Typography>
         {isReservationCompleted ? 
-          <Complete orderNumber={1}></Complete>
+          <Complete orderNumber={1} backToHome={handlebackToHome}></Complete>
          : 
           <ReservationPage reservationCompleted={handleReservationCompleted}></ReservationPage>
         }
