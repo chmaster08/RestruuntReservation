@@ -1,25 +1,15 @@
 import { Button, Stack, Typography } from "@mui/material";
 import Preinput from "./components/preinput";
 import AvailableTableList from "./components/availableTableList";
-import {TableType} from "./libs/tabletype";
+import { TableType } from './libs/tabletype';
 import { useEffect, useState } from "react";
 import AvailableReservationItem from "./libs/reservationItem";
 import ReservationInfo from "./libs/reservationInfo";
 import { inflate } from "zlib";
+import { get } from "http";
 
 interface ReservationPageProps {
     reservationCompleted:Function
-}
-function getRandomTime(start: number, end: number): string {
-    const hour = Math.floor(Math.random() * (end - start) + start);
-    const minute = Math.floor(Math.random() * 60);
-    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-}
-
-function getRandomTimeRange(): string {
-    const startTime = getRandomTime(15, 20); // 開始時間と終了時間の範囲を設定します
-    const endTime = getRandomTime(Number(startTime.split(':')[0]) + 1, 21);
-    return `${startTime}~${endTime}`;
 }
 
 
@@ -35,11 +25,14 @@ export default function ReservationPage(props:ReservationPageProps){
     console.log(tabletype);
         setSelectedInfo({date:date.toISOString(),member:num,tableType:tabletype,name:name});
         setCanSearch(true);
-          setAvailableTableList([
-            { time: getRandomTimeRange(), tableType: tabletype },
-            { time: getRandomTimeRange(), tableType: tabletype },
-            { time: getRandomTimeRange(), tableType: tabletype },
-          ]);
+        try
+        {
+          getAvailableTableList(date.toISOString(),num.toString(),tabletype.toString());
+        }
+        catch(e)
+        {
+          console.log(e);
+        }
   }
 
   const handleSelectedTable = (table:AvailableReservationItem) => {
@@ -70,6 +63,27 @@ export default function ReservationPage(props:ReservationPageProps){
       console.log(e);
     }
 
+  }
+
+  const getAvailableTableList = async (datestr:string, num:string, tableType:string) => {
+        const param = new URLSearchParams({date:datestr,member:num,tableType:tableType});
+        const response = await fetch(`http://localhost:5000/get_availabletable?${param.toString()}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+
+        if (response.ok) {
+            const data = await response.json();
+            let datalist:AvailableReservationItem[] = [];
+            for (let i = 0; i < data.length; i++) {
+                datalist.push({time:data[i].time,tableType:data[i].table_type});
+            }
+            setAvailableTableList(datalist);
+        } else {
+            console.log("検索失敗");
+        }
   }
 
   const registerReservation = async (datestr:string,timestr:string,num:string,tableType:string,name:string) => {

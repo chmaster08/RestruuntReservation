@@ -7,4 +7,4 @@ class RegisterReservationUsecase:
         self.reservationRepository = reservationRepository
 
     def registerReservation(self, reservation):
-        return self.reservationRepository.registerReservation(reservation)
+        return self.reservationRepository.register_reservation(reservation)

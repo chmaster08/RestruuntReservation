@@ -20,6 +20,9 @@ const StringToTableType: { [key: string]: TableType | undefined } = {
 
 // 数値を文字列に変換する関数
 export function convertToString(type: TableType): string {
+    if (type === undefined) {
+        return 'どちらでも';
+    }
     return TableTypeToString[type];
 }
 
