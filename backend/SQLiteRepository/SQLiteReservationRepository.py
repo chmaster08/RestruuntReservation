@@ -1,5 +1,6 @@
 import sqlite3
 from sqlite3 import Error
+from entity.ReservationItem import ReservationItem
 from entity.IReservationRepository import IReservationRepository
 sql_create_table_list_table = """ CREATE TABLE IF NOT EXISTS TableList (
                                         id integer PRIMARY KEY,
@@ -38,11 +39,13 @@ class SQLiteReservatonRepository(IReservationRepository):
     def get_available_table(self, customerNum:int ,tableType:int ,datetime:str):
         pass
 
+    def getReservationList(self, date:str):
+        pass
 
-    def register_reservation(self, datetime:str, starttime:str, customerNum:int, tableNumber:str):
+    def register_reservation(self, reservationitem:ReservationItem):
         try:
             c = self.conn.cursor()
-            c.execute("INSERT INTO TableList (date, starttime, name, member, tableNumber) VALUES (?, ?, ?, ?, ?)", (datetime, starttime, customerNum, tableNumber))
+            c.execute("INSERT INTO TableList (date, starttime, name, member, tableNumber) VALUES (?, ?, ?, ?, ?)", (reservationitem.date, reservationitem.time, reservationitem.name, reservationitem.customer_num, reservationitem.table_number))
         except Error as e:
             print(e)
 
