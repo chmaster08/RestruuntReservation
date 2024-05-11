@@ -6,4 +6,4 @@ class CancelReservationUsecase:
         self.reservationRepository = reservationRepository
 
     def cancel(self, reservationId: int):
-        reservation = self.reservationRepository.findById(reservationId)
+        self.reservationRepository.cancel_reservation(reservationId)

@@ -1,6 +1,8 @@
-import TableType from './tabletype';
+import { TableType } from "./tabletype";
+
 type AvailableReservationItem = {
     time: string,
+    timespan: number,
     tableType: TableType,
 }
 

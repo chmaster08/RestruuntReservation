@@ -4,17 +4,13 @@ from entity.ReservationItem import ReservationItem
 
 class IReservationRepository(abc.ABC):
     @abc.abstractmethod
-    def get_available_table(self, customerNum:int ,tableType:int ,datetime:str):
+    def register_reservation(self, reservationitem:ReservationItem)->None:
         pass
 
     @abc.abstractmethod
-    def register_reservation(self, reservationitem:ReservationItem):
+    def cancel_reservation(self, id:int)->None:
         pass
 
     @abc.abstractmethod
-    def cancel_reservation(self, id:int):
-        pass
-
-    @abc.abstractmethod
-    def getReservationList(self, date:str):
+    def getReservationList(self, date:str)->list[ReservationItem]:
         pass

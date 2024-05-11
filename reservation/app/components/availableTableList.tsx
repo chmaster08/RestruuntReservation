@@ -3,6 +3,7 @@ import { Container } from "postcss";
 import { useState } from "react";
 import { TableType, convertToString } from '../libs/tabletype';
 import AvailableReservationItem from "../libs/reservationItem";
+import { getSuitableAvailableReservationItemByTime, getUniqueReservationList } from "../libs/reservationMediator";
 
 interface AvailableTableListProps {
     availableTables:AvailableReservationItem[]
@@ -15,17 +16,17 @@ export default function AvailableTableList(props:AvailableTableListProps) {
 
     const handleSelectedTable = (index:number, item : AvailableReservationItem) => {
         setSelectedIndex(index)
-        props.tableSelected(item);
+        props.tableSelected(getSuitableAvailableReservationItemByTime(props.availableTables, item.time, item.tableType));
     }
-    const getTimeRangeStringFromStart = (start:string) => {
-        return `${start}~${addTwoHours(start)}`;
+    const getTimeRangeStringFromStart = (start:string, span:number) => {
+        return `${start}~${getEndTimeStr(start, span)}`;
     }
-    const addTwoHours = (time: string): string => {
+    const getEndTimeStr = (time: string, span:number): string => {
     // Dateオブジェクトを作成
     let date = new Date(`1970-01-01T${time}Z`);
 
     // 2時間（7200000ミリ秒）を追加
-    date.setTime(date.getTime() + 2 * 60 * 60 * 1000);
+    date.setTime(date.getTime() + span * 60 * 60 * 1000);
 
     // 時間と分を取得
     let hours = date.getUTCHours();
@@ -43,7 +44,7 @@ export default function AvailableTableList(props:AvailableTableListProps) {
     return (
       <>
         <List sx={{ width: "100%", maxWidth:500, bgcolor:"Background.paper" }}>
-            {props.availableTables.map((item, index) => {
+            {getUniqueReservationList(props.availableTables).map((item, index) => {
                 return (
                   <ListItemButton
                     key={index}
@@ -51,7 +52,7 @@ export default function AvailableTableList(props:AvailableTableListProps) {
                     onClick={(event) => handleSelectedTable(index, item)}
                   >
                     <ListItemText
-                      primary={getTimeRangeStringFromStart(item.time)}
+                      primary={getTimeRangeStringFromStart(item.time, item.timespan)}
                       secondary={
                         convertToString(item.tableType)
                       }

@@ -3,12 +3,12 @@ from sqlite3 import Error
 from entity.ReservationItem import ReservationItem
 from entity.IReservationRepository import IReservationRepository
 sql_create_table_list_table = """ CREATE TABLE IF NOT EXISTS TableList (
-                                        id integer PRIMARY KEY,
+                                        id integer PRIMARY KEY AUTOINCREMENT,
                                         date text NOT NULL,
                                         starttime text NOT NULL,
                                         name text NOT NULL,
                                         member integer NOT NULL,
-                                        tableNumber text NOT NULL
+                                        table_id integer NOT NULL
                                     ); """
 
 class SQLiteReservatonRepository(IReservationRepository):
@@ -32,22 +32,31 @@ class SQLiteReservatonRepository(IReservationRepository):
         try:
             c = self.conn.cursor()
             c.execute(sql_create_table_list_table)
+            c.close()
         except Error as e:
             print(e)
-
-    
-    def get_available_table(self, customerNum:int ,tableType:int ,datetime:str):
-        pass
 
     def getReservationList(self, date:str):
-        pass
+        c = self.conn.cursor()
+        c.execute("SELECT * FROM TableList WHERE date = ?", (date,))
+        rows = c.fetchall()
+        c.close()
+        reservation_list = []
+        for row in rows:
+            reservation_list.append(ReservationItem(row[3], row[1], row[2], int(row[4]), int(row[5])))
+        return reservation_list
 
     def register_reservation(self, reservationitem:ReservationItem):
-        try:
-            c = self.conn.cursor()
-            c.execute("INSERT INTO TableList (date, starttime, name, member, tableNumber) VALUES (?, ?, ?, ?, ?)", (reservationitem.date, reservationitem.time, reservationitem.name, reservationitem.customer_num, reservationitem.table_number))
-        except Error as e:
-            print(e)
+        c = self.conn.cursor()
+        c.execute("INSERT INTO TableList (date, starttime, name, member, table_id) VALUES (?, ?, ?, ?, ?)", (reservationitem.date, reservationitem.time, reservationitem.name, reservationitem.customer_num, reservationitem.table_id))
+        result = c.fetchall()
+        self.conn.commit()
+        return result
 
     def cancel_reservation(self, id:int):
-        pass
+        try:
+            c = self.conn.cursor()
+            c.execute("DELETE FROM TableList WHERE id = ?", (id))
+            self.conn.commit()
+        except Error as e:
+            print(e)

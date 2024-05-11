@@ -7,6 +7,7 @@ import AvailableReservationItem from "./libs/reservationItem";
 import ReservationInfo from "./libs/reservationInfo";
 import { inflate } from "zlib";
 import { get } from "http";
+import { Dayjs } from "dayjs";
 
 interface ReservationPageProps {
     reservationCompleted:Function
@@ -21,19 +22,20 @@ export default function ReservationPage(props:ReservationPageProps){
   const [selecteditem, setSelectedInfo] = useState<ReservationInfo | null>(null);
   const [selectedTable, setSelectedTable] = useState<AvailableReservationItem | null>(null);
 
-  const handlePreInputCompleted = (date:Date, num:number, tabletype:TableType, name:string) => {
+  const handlePreInputCompleted = (date:Dayjs, num:number, tabletype:TableType, name:string) => {
     console.log(tabletype);
-        setSelectedInfo({date:date.toISOString(),member:num,tableType:tabletype,name:name});
+        setSelectedInfo({date:date.format("YYYY-MM-DD"),member:num,tableType:tabletype,name:name});
         setCanSearch(true);
         try
         {
-          getAvailableTableList(date.toISOString(),num.toString(),tabletype.toString());
+          getAvailableTableList(date.format("YYYY-MM-DD"),num.toString(),tabletype.toString());
         }
         catch(e)
         {
           console.log(e);
         }
   }
+
 
   const handleSelectedTable = (table:AvailableReservationItem) => {
     if (table)
@@ -49,12 +51,12 @@ export default function ReservationPage(props:ReservationPageProps){
       }
   }
 
-  const handleClickReserve = () => {
+  const handleClickReserve = async () => {
     try
     {
       if (selecteditem && selectedTable)
         {
-          registerReservation(selecteditem.date,selectedTable.time,selecteditem.member.toString(),selecteditem.tableType.toString(),selecteditem.name);
+          await registerReservation(selecteditem.date,selectedTable.time,selecteditem.member.toString(),selecteditem.tableType.toString(),selecteditem.name,selectedTable.id.toString());
         }
       props.reservationCompleted();
     }
@@ -78,7 +80,8 @@ export default function ReservationPage(props:ReservationPageProps){
             const data = await response.json();
             let datalist:AvailableReservationItem[] = [];
             for (let i = 0; i < data.length; i++) {
-                datalist.push({time:data[i].time,tableType:data[i].table_type});
+                console.log(data[i]);
+                datalist.push({time:data[i].time,tableType:data[i].table_type,timespan:data[i].timespan,capacity:data[i].capacity,id:data[i].table_id});
             }
             setAvailableTableList(datalist);
         } else {
@@ -86,13 +89,13 @@ export default function ReservationPage(props:ReservationPageProps){
         }
   }
 
-  const registerReservation = async (datestr:string,timestr:string,num:string,tableType:string,name:string) => {
+  const registerReservation = async (datestr:string,timestr:string,num:string,tableType:string,name:string,tableid:string) => {
         const response = await fetch('http://localhost:5000/register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLSearchParams({date:datestr,time:timestr,member:num,tableType:tableType,name:name})});
+        body: new URLSearchParams({date:datestr,time:timestr,member:num,tableType:tableType,name:name,table_id:tableid})});
 
         if (response.ok) {
             console.log("予約完了");

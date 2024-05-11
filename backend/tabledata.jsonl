@@ -1,8 +1,9 @@
-{"id":1, "type":"Terrace", "capacity":2}
-{"id":3, "type":"Terrace", "capacity":2}
-{"id":4, "type":"Terrace", "capacity":4}
-{"id":5, "type":"Terrace", "capacity":6}
-{"id":6, "type":"Indoor", "capacity":2}
-{"id":7, "type":"Indoor", "capacity":2}
-{"id":8, "type":"Indoor", "capacity":4}
-{"id":9, "type":"Indoor", "capacity":6}
+{"id":1, "type":2, "capacity":2}
+{"id":2, "type":2, "capacity":2}
+{"id":3, "type":2, "capacity":2}
+{"id":4, "type":2, "capacity":4}
+{"id":5, "type":2, "capacity":6}
+{"id":6, "type":1, "capacity":2}
+{"id":7, "type":1, "capacity":2}
+{"id":8, "type":1, "capacity":4}
+{"id":9, "type":1, "capacity":6}

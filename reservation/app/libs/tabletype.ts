@@ -1,7 +1,7 @@
 export const TableType ={
-    Indoor:0,
-    Terrace:1,
-    Both:2
+    Indoor:1,
+    Terrace:2,
+    Both:3
 } as const;
 
 export type TableType = typeof TableType[keyof typeof TableType];
