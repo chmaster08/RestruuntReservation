@@ -35,3 +35,8 @@ class TableList:
             if table.capacity >= capacity and table.tableType == tableType:
                 retValue.append(table)
         return retValue
+    def getTableTypeById(self, id:int)->TableType:
+        for table in self.data:
+            if table.id == id:
+                return table.tableType
+        return TableType.NoType

@@ -14,3 +14,7 @@ class IReservationRepository(abc.ABC):
     @abc.abstractmethod
     def getReservationList(self, date:str)->list[ReservationItem]:
         pass
+
+    @abc.abstractmethod
+    def change_DoneStatus(self, id:int):
+        pass

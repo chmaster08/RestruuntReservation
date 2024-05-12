@@ -27,7 +27,7 @@ def register():
     repository  = SQLiteReservatonRepository(db_file=db_path)
     app.logger.info(f"date: {date}, time: {time}, num: {num}, tableType: {tableType}, name: {name}, table_id: {table_id}")
     registerUsecase = RegisterReservationUsecase(repository)
-    reservationItem = ReservationItem(name, date, time, num, table_id)
+    reservationItem = ReservationItem(-1,name, date, time, num, table_id, tableType,False)
     registerUsecase.registerReservation(reservationItem)
     return {"result": "success"}
 
@@ -36,8 +36,17 @@ def get_table():
     date = request.args["date"]
     repository  = SQLiteReservatonRepository(db_file=db_path)
     usecase = GetReservationTableUsecase(repository)
+    app.logger.info(f"date: {date}")
     result = usecase.execute(date)
-    return Response(json.dumps(result), mimetype='application/json')
+    dict_result = [ r.to_dict() for r in result]
+    return Response(json.dumps(dict_result), mimetype='application/json')
+
+@app.route("/change_done", methods=["GET"])
+def change_done():
+    id = request.args["id"]
+    repository  = SQLiteReservatonRepository(db_file=db_path)
+    repository.change_DoneStatus(id)
+    return {"result": "success"}
 
 @app.route("/get_availabletable", methods=["GET"])
 def get_availabletable():
@@ -54,7 +63,7 @@ def get_availabletable():
 
     return Response(json.dumps(resultjson), mimetype='application/json')
 
-@app.route("/cancel", methods=["POST"])
+@app.route("/cancel", methods=["GET"])
 def cancel():
     id = request.args["id"]
     repository  = SQLiteReservatonRepository(db_file=db_path)
