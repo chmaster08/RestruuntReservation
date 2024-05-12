@@ -34,7 +34,7 @@ class SQLiteReservatonRepository(IReservationRepository):
         try:
             c = self.conn.cursor()
             c.execute(sql_create_table_list_table)
-            c.close()
+            self.conn.commit()
         except Error as e:
             print(e)
 
@@ -42,7 +42,6 @@ class SQLiteReservatonRepository(IReservationRepository):
         c = self.conn.cursor()
         c.execute("SELECT * FROM TableList WHERE date = ?", (date,))
         rows = c.fetchall()
-        c.close()
         reservation_list = []
         tablelist = TableList()
         for row in rows:
