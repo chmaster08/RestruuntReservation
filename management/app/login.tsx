@@ -1,11 +1,29 @@
+"use client";
 import { Box, Button, Checkbox, Container, FormControlLabel, Grid, Link, TextField, Typography } from "@mui/material";
+import { useState } from "react";
 interface LoginProps {
-    loginCompleted:Function
+  loginCompleted:Function;
 }
+
 export default function Login(props:LoginProps) {
-    const handleSubmit = () => {
-    console.log("ログイン完了");
-    props.loginCompleted();
+  const [password, setPassword] = useState("");
+  const [errorOccurred, setErrorOccurred] = useState(false);
+    const handleSubmit = async (event:React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            const param = new URLSearchParams({password: password});
+             const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_API_URL+`login_management?${param.toString()}`);
+            const data = await response.json();
+            if (response.ok && data.result === "success")
+              {
+                console.log("ログイン成功");
+                props.loginCompleted();
+              }
+              else
+              {
+                console.log("ログイン失敗");
+                setErrorOccurred(true);
+              }
+            //console.log(response);
   };
   return (
     <>
@@ -23,19 +41,10 @@ export default function Login(props:LoginProps) {
           </Typography>
           <Box
             component="form"
+            onSubmit={handleSubmit}
             noValidate
-            sx={{ mt: 1 }}
+            sx={{ mt: 1 , minWidth:300}}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="User"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
             <TextField
               margin="normal"
               required
@@ -44,16 +53,13 @@ export default function Login(props:LoginProps) {
               label="Password"
               type="password"
               id="password"
+              onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
+            {errorOccurred && <Typography color="error" sx={{width:"100%"}}>パスワードが異なります</Typography>}
             <Button
               type="submit"
               fullWidth
-              onClick={handleSubmit}
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >

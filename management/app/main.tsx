@@ -31,7 +31,7 @@ export default function ManagementMain() {
         try
         {
             const param = new URLSearchParams({id: id.toString()});
-            const response = await fetch(`http://localhost:5000/cancel?${param.toString()}`);
+            const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_API_URL+`cancel?${param.toString()}`);
             if (response.ok)
             {
                 await getReservationRecords(selectedDate);
@@ -64,7 +64,7 @@ export default function ManagementMain() {
         try
         {
             const param = new URLSearchParams({id: id.toString()});
-            const response = await fetch(`http://localhost:5000/change_done?${param.toString()}`);
+            const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_API_URL+`change_done?${param.toString()}`);
             if (response.ok)
             {
                 await getReservationRecords(selectedDate);
@@ -82,7 +82,7 @@ export default function ManagementMain() {
         const param = new URLSearchParams({
           date: date.format("YYYY-MM-DD"),
         });
-            const response = await fetch(`http://localhost:5000/get_table?${param.toString()}`);
+            const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_API_URL +`get_table?${param.toString()}`);
             if (response.ok)
             {
                 setRecordList([]);

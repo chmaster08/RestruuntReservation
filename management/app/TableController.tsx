@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Update,Sync } from "@mui/icons-material";
 import ReservationRecord from "./libs/reservationRecord";
 import { cp } from "fs";
+import 'dayjs/locale/ja';
 
 interface TableControllerProps {
     selectedItem:ReservationRecord | null
@@ -47,7 +48,7 @@ export default function TableController(porps:TableControllerProps) {
 
     return (
       <Stack spacing={2} direction="row" sx={{width:"100%"}}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="ja">
           <DatePicker
             sx={{ width: "100%" }}
             disablePast

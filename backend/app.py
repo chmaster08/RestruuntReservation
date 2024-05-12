@@ -16,6 +16,9 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.INFO)
 CORS(app)
 
+def check_login(password):
+    return password == "admin"
+
 @app.route("/register", methods=["POST"])
 def register():
     date = request.form.get("date")
@@ -71,12 +74,10 @@ def cancel():
     usecase.cancel(id)
     return {"result": "success"}
 
-@app.route("/login", methods=["POST"])
+@app.route("/login_management", methods=["GET"])
 def login():
-    id = request.args["id"]
     password = request.args["password"]
-    if not check_login(id, password):
-        session["login"] = True
+    if not check_login(password):
         return {"result": "fail"}
     return {"result": "success"}
 
@@ -88,6 +89,3 @@ def logout():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
 
-
-def check_login(id, password):
-    return True
