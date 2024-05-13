@@ -1,4 +1,3 @@
-"use client";
 import { Box, Button, Checkbox, Container, FormControlLabel, Grid, Link, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 interface LoginProps {
@@ -9,6 +8,8 @@ export default function Login(props:LoginProps) {
   const [password, setPassword] = useState("");
   const [errorOccurred, setErrorOccurred] = useState(false);
     const handleSubmit = async (event:React.FormEvent<HTMLFormElement>) => {
+      try
+      {
             event.preventDefault();
             const param = new URLSearchParams({password: password});
              const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_API_URL+`login_management?${param.toString()}`);
@@ -23,6 +24,13 @@ export default function Login(props:LoginProps) {
                 console.log("ログイン失敗");
                 setErrorOccurred(true);
               }
+
+      }
+      catch(e)
+      {
+        console.log(e);
+        setErrorOccurred(true);
+      }
             //console.log(response);
   };
   return (

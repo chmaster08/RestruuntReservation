@@ -1,16 +1,31 @@
 version: '3'
+networks:
+  docker-ansible:
+    ipam:
+      config:
+        - subnet: 192.168.210.0/24
+          gateway: 192.168.210.1
 services:
   backend:
     build: ./backend
     volumes:
       - ./backend:/app
     ports:
-      - "5000:5000"
-  reservation:
-    build: ./reservation
-    ports:
-      - "3000:3000"
+      - "334:334"
+    networks:
+      docker-ansible:
+        ipv4_address: 192.168.210.100
   management:
     build: ./management
     ports:
-      - "3000:3001"
+      - "3000:3000"
+    networks:
+      docker-ansible:
+        ipv4_address: 192.168.210.102
+  reservation:
+    build: ./reservation
+    ports:
+      - "8000:3000"
+    networks:
+      docker-ansible:
+        ipv4_address: 192.168.210.101

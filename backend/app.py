@@ -18,6 +18,10 @@ CORS(app)
 
 def check_login(password):
     return password == "admin"
+    
+@app.route("/", methods=["GET"])
+def index():
+    return "Hello World"
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -87,5 +91,5 @@ def logout():
     return {"result": "success"}
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=334, debug=True, ssl_context=('./openssl/server.crt', './openssl/server.key'))
 

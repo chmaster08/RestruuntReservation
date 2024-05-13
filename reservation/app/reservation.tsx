@@ -69,7 +69,7 @@ export default function ReservationPage(props:ReservationPageProps){
 
   const getAvailableTableList = async (datestr:string, num:string, tableType:string) => {
         const param = new URLSearchParams({date:datestr,member:num,tableType:tableType});
-        const response = await fetch(`http://localhost:5000/get_availabletable?${param.toString()}`, {
+        const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_API_URL+`get_availabletable?${param.toString()}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -90,7 +90,7 @@ export default function ReservationPage(props:ReservationPageProps){
   }
 
   const registerReservation = async (datestr:string,timestr:string,num:string,tableType:string,name:string,tableid:string) => {
-        const response = await fetch('http://localhost:5000/register', {
+        const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_API_URL+'register', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
