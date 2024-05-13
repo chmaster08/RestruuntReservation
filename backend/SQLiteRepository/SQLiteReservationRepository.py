@@ -69,3 +69,16 @@ class SQLiteReservatonRepository(IReservationRepository):
             self.conn.commit()
         except Error as e:
             print(e)
+
+    def getLatestReservation(self)->ReservationItem:
+        try:
+            c = self.conn.cursor()
+            c.execute("SELECT * FROM TableList ORDER BY id DESC LIMIT 1")
+            row = c.fetchone()
+            tablelist = TableList()
+            table_type = tablelist.getTableTypeById(row[5])
+            done = True if row[6] == 1 else False
+            return ReservationItem(int(row[0]),row[3], row[1], row[2], int(row[4]), int(row[5]), int(table_type), done)
+        except Error as e:
+            print(e)
+            return None

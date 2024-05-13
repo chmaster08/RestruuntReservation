@@ -35,8 +35,8 @@ def register():
     app.logger.info(f"date: {date}, time: {time}, num: {num}, tableType: {tableType}, name: {name}, table_id: {table_id}")
     registerUsecase = RegisterReservationUsecase(repository)
     reservationItem = ReservationItem(-1,name, date, time, num, table_id, tableType,False)
-    registerUsecase.registerReservation(reservationItem)
-    return {"result": "success"}
+    result =  registerUsecase.registerReservation(reservationItem)
+    return {"result": "success", "id": result.id}
 
 @app.route("/get_table", methods=["GET"])
 def get_table():
@@ -66,7 +66,6 @@ def get_availabletable():
     result = usecase.getAvailableReservationList(date, int(member), int(tableType))
     
     resultjson = [ r.to_dict() for r in result]
-    app.logger.info(resultjson)
 
     return Response(json.dumps(resultjson), mimetype='application/json')
 

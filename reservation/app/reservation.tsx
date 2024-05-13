@@ -56,9 +56,10 @@ export default function ReservationPage(props:ReservationPageProps){
     {
       if (selecteditem && selectedTable)
         {
-          await registerReservation(selecteditem.date,selectedTable.time,selecteditem.member.toString(),selecteditem.tableType.toString(),selecteditem.name,selectedTable.id.toString());
+          let result = await registerReservation(selecteditem.date,selectedTable.time,selecteditem.member.toString(),selecteditem.tableType.toString(),selecteditem.name,selectedTable.id.toString());
+
+          props.reservationCompleted({orderId:result,time:selectedTable.time,name:selecteditem.name,member:selecteditem.member,tableType:selecteditem.tableType});
         }
-      props.reservationCompleted();
     }
     catch(e)
     {
@@ -89,7 +90,7 @@ export default function ReservationPage(props:ReservationPageProps){
         }
   }
 
-  const registerReservation = async (datestr:string,timestr:string,num:string,tableType:string,name:string,tableid:string) => {
+  const registerReservation = async (datestr:string,timestr:string,num:string,tableType:string,name:string,tableid:string):Promise<number> =>{
         const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_API_URL+'register', {
         method: 'POST',
         headers: {
@@ -99,8 +100,11 @@ export default function ReservationPage(props:ReservationPageProps){
 
         if (response.ok) {
             console.log("予約完了");
+          let json = await response.json();
+          return json["id"];
         } else {
             console.log("予約失敗");
+            return -1;
         }
     }
 
