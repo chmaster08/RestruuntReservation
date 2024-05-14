@@ -1,15 +1,13 @@
 "use client";
-import Image from "next/image";
-import Login from "./login";
-import { useState } from "react";
-import { Container, Typography } from "@mui/material";
-import ManagementMain from "./main";
-
+import Login from "./component/login";
+import { Button, Container, Typography, Link } from '@mui/material';
+import { useRouter } from "next/navigation";
 export default function Home() {
-  const [isLogin, setIsLogin] = useState(false);
+  const router = useRouter();
   const handleLoginCompleted = () => {
     console.log("ログイン完了");
-    setIsLogin(true);
+    router.push("/Main");
+
   }
   return (
     <>
@@ -17,11 +15,7 @@ export default function Home() {
         <Typography align="center" variant="h1">
           予約管理画面
         </Typography>
-        {isLogin ? 
-        <ManagementMain></ManagementMain>
-         : 
-          <Login loginCompleted={handleLoginCompleted}></Login>
-        }
+        <Login loginCompleted={handleLoginCompleted}></Login>
       </Container>
     </>
   );

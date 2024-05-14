@@ -5,7 +5,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
 import { Update,Sync } from "@mui/icons-material";
-import ReservationRecord from "./libs/reservationRecord";
+import {ReservationRecord} from "../libs/reservationRecord";
 import { cp } from "fs";
 import 'dayjs/locale/ja';
 

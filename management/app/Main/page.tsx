@@ -1,10 +1,11 @@
+"use client";
 import { Stack, Table, Typography } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
-import ReservationList from "./ReservationList";
-import ReservationRecord from "./libs/reservationRecord";
-import { TableType } from "./libs/tableType";
-import TableController from "./TableController";
+import ReservationList from "../component/ReservationList";
+import {ReservationRecord} from "../libs/reservationRecord";
+import { TableType } from "../libs/tableType";
+import TableController from "../component/TableController";
 
 export default function ManagementMain() {
 

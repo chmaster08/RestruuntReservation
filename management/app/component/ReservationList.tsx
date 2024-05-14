@@ -1,6 +1,6 @@
 import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Select, Checkbox, SelectChangeEvent } from '@mui/material';
-import ReservationRecord from "./libs/reservationRecord";
-import { convertToString } from "./libs/tableType";
+import {ReservationRecord }from "../libs/reservationRecord";
+import { convertToString } from "../libs/tableType";
 import React, { MouseEvent, useState } from 'react';
 
 
