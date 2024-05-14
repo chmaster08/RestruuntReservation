@@ -1,26 +1,24 @@
 import { Button, Stack, Typography } from "@mui/material";
-import Preinput from "./components/preinput";
-import AvailableTableList from "./components/availableTableList";
-import { TableType } from './libs/tabletype';
+import Preinput from "../components/preinput";
+import AvailableTableList from "../components/availableTableList";
+import { TableType } from '../libs/tabletype';
 import { useEffect, useState } from "react";
-import AvailableReservationItem from "./libs/reservationItem";
-import ReservationInfo from "./libs/reservationInfo";
+import AvailableReservationItem from "../libs/reservationItem";
+import ReservationInfo from "../libs/reservationInfo";
 import { inflate } from "zlib";
 import { get } from "http";
 import { Dayjs } from "dayjs";
-
-interface ReservationPageProps {
-    reservationCompleted:Function
-}
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 
 
-export default function ReservationPage(props:ReservationPageProps){
+export default function ReservationPage(){
   const [availableTableList,setAvailableTableList] = useState<AvailableReservationItem[]>([]);
   const [canSearch, setCanSearch] = useState(false);
   const [canregister, setCanRegister] = useState(false);
   const [selecteditem, setSelectedInfo] = useState<ReservationInfo | null>(null);
   const [selectedTable, setSelectedTable] = useState<AvailableReservationItem | null>(null);
+  const router = useRouter();
 
   const handlePreInputCompleted = (date:Dayjs, num:number, tabletype:TableType, name:string) => {
     console.log(tabletype);
@@ -58,7 +56,16 @@ export default function ReservationPage(props:ReservationPageProps){
         {
           let result = await registerReservation(selecteditem.date,selectedTable.time,selecteditem.member.toString(),selecteditem.tableType.toString(),selecteditem.name,selectedTable.id.toString());
 
-          props.reservationCompleted({orderId:result,time:selectedTable.time,name:selecteditem.name,member:selecteditem.member,tableType:selecteditem.tableType});
+          let useSearchParams = new URLSearchParams();
+          useSearchParams.append("orderId",result.toString());
+          useSearchParams.append("time",selectedTable.time);
+          useSearchParams.append("name",selecteditem.name);
+          useSearchParams.append("member",selecteditem.member.toString());
+          useSearchParams.append("tableType",selecteditem.tableType.toString());
+          useSearchParams.append("tableId",selectedTable.id.toString());
+          let url = `/complete?${useSearchParams}`;
+          console.log(url);
+          router.push(url);
         }
     }
     catch(e)
