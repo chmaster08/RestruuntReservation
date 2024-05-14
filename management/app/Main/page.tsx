@@ -6,6 +6,8 @@ import ReservationList from "../component/ReservationList";
 import {ReservationRecord} from "../libs/reservationRecord";
 import { TableType } from "../libs/tableType";
 import TableController from "../component/TableController";
+import { useAuth } from "../contexts/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function ManagementMain() {
 
@@ -14,6 +16,8 @@ export default function ManagementMain() {
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [selectedRecord, setSelectedRecord] = useState<ReservationRecord | null>(null); // ReservationRecord | null
     const [checked, setChecked] = useState(false); // boolean
+    const {token} = useAuth();
+    const router = useRouter();
     const handleSelectedDateChange = async (date:Dayjs | null) => {
         if (date) {
             setSelectedDate(date);
@@ -82,19 +86,20 @@ export default function ManagementMain() {
         {
         const param = new URLSearchParams({
           date: date.format("YYYY-MM-DD"),
+          token :token? token : ""
         });
             const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_API_URL +`get_table?${param.toString()}`);
-            if (response.ok)
+            let data =  await response.json();
+            if (data.status_code == 200)
             {
                 setRecordList([]);
-                const data = await response.json();
                 console.log(data);
-                if (data.length == 0) {
+                if (data.body.length == 0) {
                     return;
                 }
                 let datalist:ReservationRecord[] = [];
-                for (let i = 0; i < data.length; i++) {
-                    const record = data[i];
+                for (let i = 0; i < data.body.length; i++) {
+                    const record = data.body[i];
                     console.log(record);
                     let rec = 
                     {
@@ -116,6 +121,15 @@ export default function ManagementMain() {
                 }
                 let sortedlist = datalist.sort((a,b) => {return (a.time.localeCompare(b.time))})
                 setRecordList(sortedlist);
+            }
+            else if (data.status_code == 403)
+            {
+                console.log("Invalid token");
+                router.push('/Login');
+            }
+            else
+            {
+                console.log("Failed to get reservation records");
             }
         }
         catch(e)

@@ -1,5 +1,8 @@
-import { Box, Button, Checkbox, Container, FormControlLabel, Grid, Link, TextField, Typography } from "@mui/material";
+"use client";
+import { Box, Button, Checkbox, Container, FormControlLabel, Grid, Link, TextField, Typography} from "@mui/material";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 interface LoginProps {
   loginCompleted:Function;
 }
@@ -7,6 +10,8 @@ interface LoginProps {
 export default function Login(props:LoginProps) {
   const [password, setPassword] = useState("");
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const router = useRouter();
+  const {setToken} = useAuth();
     const handleSubmit = async (event:React.FormEvent<HTMLFormElement>) => {
       try
       {
@@ -14,10 +19,12 @@ export default function Login(props:LoginProps) {
             const param = new URLSearchParams({password: password});
              const response = await fetch(process.env.NEXT_PUBLIC_BACKEND_API_URL+`login_management?${param.toString()}`);
             const data = await response.json();
-            if (response.ok && data.result === "success")
+            console.log(data);
+            if (data.status_code == 200)
               {
                 console.log("ログイン成功");
-                props.loginCompleted();
+                setToken(data.body);
+                router.push("/Main");
               }
               else
               {
@@ -58,7 +65,7 @@ export default function Login(props:LoginProps) {
               required
               fullWidth
               name="password"
-              label="Password"
+              label="パスワード"
               type="password"
               id="password"
               onChange={(e) => setPassword(e.target.value)}
@@ -73,6 +80,7 @@ export default function Login(props:LoginProps) {
             >
               Sign In
             </Button>
+            <Button onClick={()=>router.push("/changepass")}>パスワード変更</Button>
           </Box>
         </Box>
       </Container>

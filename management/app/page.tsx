@@ -1,5 +1,5 @@
 "use client";
-import Login from "./component/login";
+import Login from "./Login/page";
 import { Button, Container, Typography, Link } from '@mui/material';
 import { useRouter } from "next/navigation";
 export default function Home() {

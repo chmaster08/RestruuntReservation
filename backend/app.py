@@ -1,5 +1,8 @@
+import configparser
+from datetime import datetime, timedelta
 from flask import Flask, Response, request, session, jsonify
 from flask_cors import CORS
+import hashlib
 import json
 import logging
 from SQLiteRepository.SQLiteReservationRepository import SQLiteReservatonRepository
@@ -11,14 +14,94 @@ from entity.ReservationItem import ReservationItem
 from usecase.registerReservationUsecase import RegisterReservationUsecase
 from entity.IReservationRepository import IReservationRepository
 db_path = "./reservation.db"
+g_TIMEOUT_MINUTES = 10
 app = Flask(__name__)
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.INFO)
 CORS(app)
 
+def saveTokenAndExpiration(token,expiration):
+    config = configparser.ConfigParser()
+    config.add_section('Token')
+    config.set('Token','adminToken', token)
+    config.set('Token','adminExpire', expiration)
+    with open('token.config','w') as f:
+        config.write(f)
+
+def readTokenAndExpiration():
+    config = configparser.ConfigParser()
+    config.read('./token.config')
+    token = config.get('Token','adminToken')
+    expstr = config.get('Token','adminExpire')
+    exp = datetime.strptime(expstr,'%Y-%m-%d-%H-%M-%S')
+    return (token, exp)
+
+def IsValidToken(clientToken):
+    token , exp = readTokenAndExpiration()
+    if clientToken != token:
+        return False
+    if datetime.now() > exp:
+        return False
+    return True
+
+def generateNewToken():
+    ct = datetime.now()
+    exp = ct + timedelta(minutes=g_TIMEOUT_MINUTES)
+    expstr = exp.strftime('%Y-%m-%d-%H-%M-%S')
+    hash = hashlib.sha1(expstr.encode()).hexdigest()
+    return (hash, expstr)
+
+def getToken():
+    hash, exp = generateNewToken()
+    saveTokenAndExpiration(hash, exp)
+    #TODO Tokenを発行する機能
+    return hash
+
+def generateHash(rowpass):
+    return hashlib.sha256(rowpass.encode()).hexdigest()
+
+def getCurrentPassHash():
+    return readPassHash()
+
+def IsCorrectPass(rowpass):
+    passhash = generateHash(rowpass)
+    return passhash == getCurrentPassHash()
+
+def getCurrentHash():
+    return readPassHash()
+
+def readPassHash():
+    config = configparser.ConfigParser()
+    config.read('./hash.config')
+    return config.get('PassHash','hash')
+
+def generate_hash(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
 def check_login(password):
     return password == "admin"
-    
+
+def RegisterNewPassword(rowpass):
+    passhash = generateHash(rowpass)
+    config = configparser.ConfigParser()
+    config['PassHash'] = {'hash':passhash}
+    with open('hash.config','w') as configfile:
+        config.write(configfile)
+
+def CreateResponse(status_code , body = None):
+    response = jsonify(
+    {
+            "status_code": status_code,
+            "body": "" if body == None else body
+        }
+    )
+    response.headers["Content-Type"] = "application/json; charset=UTF-8"
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response ,status_code
+
+
+
+#----------------------------------API----------------------------------
 @app.route("/", methods=["GET"])
 def index():
     return "Hello World"
@@ -41,12 +124,15 @@ def register():
 @app.route("/get_table", methods=["GET"])
 def get_table():
     date = request.args["date"]
+    token = request.args["token"]
+    if not IsValidToken(token):
+        return CreateResponse(403)
     repository  = SQLiteReservatonRepository(db_file=db_path)
     usecase = GetReservationTableUsecase(repository)
     app.logger.info(f"date: {date}")
     result = usecase.execute(date)
     dict_result = [ r.to_dict() for r in result]
-    return Response(json.dumps(dict_result), mimetype='application/json')
+    return CreateResponse(200,dict_result)
 
 @app.route("/change_done", methods=["GET"])
 def change_done():
@@ -80,14 +166,37 @@ def cancel():
 @app.route("/login_management", methods=["GET"])
 def login():
     password = request.args["password"]
-    if not check_login(password):
-        return {"result": "fail"}
-    return {"result": "success"}
+    app.logger.info(password)
+    passhash = generateHash(password)
+    app.logger.info(passhash)
+    currenthash = getCurrentPassHash()
+    app.logger.info(currenthash)
+    if passhash == currenthash:
+        token = getToken()
+        return CreateResponse(200,token)
+    else:
+        return CreateResponse(403)
 
 @app.route("/logout", methods=["POST"])
 def logout():
     session.pop("login", None)
     return {"result": "success"}
+
+@app.route("/changepassword",methods=["GET"])
+def changepassword():
+    if not IsValidToken(request.args['token']):
+        return CreateResponse(403)
+
+    req=request.args
+    oldpass = req["oldpass"]
+    newpass = req["newpass"]
+    if IsCorrectPass(oldpass):
+        RegisterNewPassword(newpass)
+        return CreateResponse(200)
+
+    else:
+        return CreateResponse(400)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=334, debug=True, ssl_context=('./openssl/server.crt', './openssl/server.key'))
