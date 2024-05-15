@@ -38,10 +38,20 @@
 
 ### フロントエンド
 - 予約、管理サイト: React,Next.jsを使用
+- Node.js v20.12.2
+- Next.js 14.2.3
 
 ### バックエンド
-- フレームワーク: Flask
+- フレームワーク: Flask 3.0.3
 - データベース: SQLite
+
+### 配置
+
+RestaurantReservation       
+├── backend/     
+├── reservation/     
+└── management/
+
 
 ## セットアップ
 
@@ -57,7 +67,7 @@
     ```bash
     npm install
     ```
-4. フロントエンド側を起動します。
+4. ./reservation ./managementそれぞれで以下のコマンドをたたいて起動します。
       ```bash
       npm run dev
       ```
