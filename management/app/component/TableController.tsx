@@ -42,8 +42,10 @@ export default function TableController(porps:TableControllerProps) {
     }
 
     const handleCheck = () => {
-        setIsChecked(!isChecked);
-        porps.updateChecked(isChecked);
+
+        let value = !isChecked;
+        setIsChecked(value);
+        porps.updateChecked(value);
     }
 
     return (

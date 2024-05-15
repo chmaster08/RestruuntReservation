@@ -21,7 +21,6 @@ export default function ManagementMain() {
     const handleSelectedDateChange = async (date:Dayjs | null) => {
         if (date) {
             setSelectedDate(date);
-            await getReservationRecords(date);
         }
     }
 
@@ -62,7 +61,6 @@ export default function ManagementMain() {
     const handleDoneCheckChanged = async (checked:boolean) => {
         console.log(checked);
         setChecked(checked);
-        await getReservationRecords(selectedDate);
     }
 
     const completeReservation = async (id:number) => {
@@ -100,7 +98,6 @@ export default function ManagementMain() {
                 let datalist:ReservationRecord[] = [];
                 for (let i = 0; i < data.body.length; i++) {
                     const record = data.body[i];
-                    console.log(record);
                     let rec = 
                     {
                         id: record.id,
@@ -140,7 +137,7 @@ export default function ManagementMain() {
     useEffect(() => {
         getReservationRecords(selectedDate);
     
-    }, [])
+    }, [checked, selectedDate])
 
     const handleSelectedRecordChanged = (record:ReservationRecord) => {
         setSelectedRecord(record);
