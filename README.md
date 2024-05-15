@@ -58,7 +58,6 @@
     npm install
     ```
 4. フロントエンド側を起動します。
-    - フロントエンド:
       ```bash
       npm run dev
       ```
